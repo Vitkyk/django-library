@@ -1,6 +1,19 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.http import HttpResponse
+from django.template import loader
+from bookstore.models import Author
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    template = loader.get_template('index.html')
+    context = {}
+    return HttpResponse(template.render(context, request))
+
+
+def authors(request):
+    template = loader.get_template('author/index.html')
+    context = {
+        'entries': Author.objects.all(),
+    }
+    return HttpResponse(template.render(context, request))
