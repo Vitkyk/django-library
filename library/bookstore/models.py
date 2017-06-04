@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from behaviors.behaviors import Authored, Timestamped, Published
 
 
 class Profile(models.Model):
@@ -38,21 +39,14 @@ class History(models.Model):
     end_date = models.DateField()
 
 
-class Comment(models.Model):
+class Comment(Authored, Timestamped, models.Model):
     book = models.OneToOneField(Book)
-    comment_author = models.OneToOneField(User)
     text = models.CharField(max_length=200)
-    create_date = models.DateTimeField()
-    update_date = models.DateTimeField()
 
 
-class Like(models.Model):
+class Like(Authored, Timestamped, models.Model):
     book = models.OneToOneField(Book)
-    comment_author = models.OneToOneField(User)
-    create_date = models.DateTimeField()
 
 
-class Dislike(models.Model):
+class Dislike(Authored, Timestamped, models.Model):
     book = models.OneToOneField(Book)
-    comment_author = models.OneToOneField(User)
-    create_date = models.DateTimeField()
