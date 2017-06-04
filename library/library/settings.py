@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'behaviors.apps.BehaviorsConfig',
 
     'bookstore',
+    'taggit',
 ]
 
 MIDDLEWARE = [

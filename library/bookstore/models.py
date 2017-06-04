@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db import models
+from taggit.managers import TaggableManager
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from behaviors.behaviors import Authored, Timestamped, Published
@@ -17,12 +18,14 @@ class Author(models.Model):
     born_date = models.DateField()
     death_date = models.DateField()
     description = models.TextField()
+    tags = TaggableManager()
 
 
 class Book(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
+    tags = TaggableManager()
 
 
 class BookOnHands(models.Model):
