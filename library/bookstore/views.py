@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponse
 from django.template import loader
-from bookstore.models import Author
+from .models import Author
 
 
 def index(request):
