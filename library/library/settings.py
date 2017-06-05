@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'bookstore',
     'taggit',
+    'bootstrap3',
 ]
 
 MIDDLEWARE = [
