@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from taggit.managers import TaggableManager
+from django.utils import timezone
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from behaviors.behaviors import Authored, Timestamped, Published
@@ -20,36 +21,52 @@ class Author(models.Model):
     description = models.TextField()
     tags = TaggableManager()
 
+    def __str__(self):
+        return self.name
 
-class Book(models.Model):
+
+class Book(Published, models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
     tags = TaggableManager()
 
+    def __str__(self):
+        return self.title
+
+
+class BookInstance(models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    created = models.DateField(default=timezone.now)
+
+    def __str__(self):
+        return self.book
+
 
 class BookOnHands(models.Model):
-    user = models.OneToOneField(User)
-    book = models.OneToOneField(Book)
+    user = models.ForeignKey(User)
+    bookInstance = models.ForeignKey(BookInstance)
     issue_date = models.DateField()
     return_date = models.DateField()
 
 
 class History(models.Model):
-    user = models.OneToOneField(User)
-    book = models.OneToOneField(Book)
+    user = models.ForeignKey(User)
+    bookInstance = models.ForeignKey(BookInstance)
     start_date = models.DateField()
     end_date = models.DateField()
 
 
 class Comment(Authored, Timestamped, models.Model):
-    book = models.OneToOneField(Book)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
     text = models.CharField(max_length=200)
 
 
-class Like(Authored, Timestamped, models.Model):
-    book = models.OneToOneField(Book)
+class Like(Authored, models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    created = models.DateField(default=timezone.now)
 
 
-class Dislike(Authored, Timestamped, models.Model):
-    book = models.OneToOneField(Book)
+class Dislike(Authored, models.Model):
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    created = models.DateField(default=timezone.now)
