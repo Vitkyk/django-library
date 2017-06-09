@@ -1,9 +1,10 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import loader
 from .models import Author, Book
+from .forms import BookForm
 
 
 def index(request):
@@ -33,4 +34,20 @@ def book_detail(request, id=1):
         request,
         'book/detail.html',
         {'item': Book.objects.get(pk=id)}
+    )
+
+
+def book_new(request):
+    if request.method == 'POST':
+        book = Book()
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = BookForm()
+    return render(
+        request,
+        'book/form.html',
+        {'form': form}
     )
