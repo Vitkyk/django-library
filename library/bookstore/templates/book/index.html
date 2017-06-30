@@ -1,4 +1,5 @@
 {% extends "../base_generic.html" %}
+{% load main %}
 
 {% block title %}{{ section.title }}{% endblock %}
 
@@ -6,6 +7,49 @@
     <h1>Books</h1>
     <div>
       <a type="submit" class="btn btn-default" href="{% url 'book_new' %}">New book</a>
+    </div>
+    <div class="pagination">
+        <span class="step-links">
+            {% if entries.has_previous %}
+                <a href="?page={{ entries.previous_page_number }}">previous</a>
+            {% endif %}
+
+            {% if entries.number != 1 %}
+                <a href="?page=1">1</a>
+            {% endif %}
+
+            {% if 1 < entries.number|subtract_last:range|subtract:1 %}
+                ...
+            {% endif %}
+
+            {% for index in range reversed %}
+                {% if entries.number|subtract:index > 1 %}
+                    <a href="?page={{ entries.number|subtract:index }}">{{ entries.number|subtract:index }}</a>
+                {% endif %}
+            {% endfor %}
+
+            <span class="current">
+                |{{ entries.number }}|
+            </span>
+
+            {% for index in range %}
+                {% if entries.number|add:index < entries.paginator.num_pages %}
+                    <a href="?page={{ entries.number|add:index }}">{{ entries.number|add:index }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if entries.number|add_last:range|add:1 < entries.paginator.num_pages %}
+                ...
+            {% endif %}
+
+            {% if entries.number != entries.paginator.num_pages %}
+                <a href="?page={{ entries.paginator.num_pages }}">{{ entries.paginator.num_pages }}</a>
+            {% endif %}
+
+            {% if entries.has_next %}
+                <a href="?page={{ entries.next_page_number }}">next</a>
+            {% endif %}
+        </span>
     </div>
     <ul>
         {% for item in entries %}

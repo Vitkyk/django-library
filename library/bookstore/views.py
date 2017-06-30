@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect
 from django.template import loader
 from .models import Author, Book, Comment
 from .forms import BookForm, CommentForm
-
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 def index(request):
     template = loader.get_template('index.html')
@@ -22,10 +22,23 @@ def authors(request):
 
 
 def books(request):
+    book_list = Book.objects.all()
+    paginator = Paginator(book_list, 1) # Show 25 contacts per page
+
+    page = request.GET.get('page')
+    try:
+        paginated_book_list = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer, deliver first page.
+        paginated_book_list = paginator.page(1)
+    except EmptyPage:
+        # If page is out of range (e.g. 9999), deliver last page of results.
+        paginated_book_list = paginator.page(paginator.num_pages)
+
     return render(
         request,
         'book/index.html',
-        {'entries': Book.objects.all()}
+        {'entries': paginated_book_list, 'range': range(1, 3)}
     )
 
 
