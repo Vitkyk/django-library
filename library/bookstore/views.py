@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.template import loader
-from .models import Author, Book
-from .forms import BookForm
+from .models import Author, Book, Comment
+from .forms import BookForm, CommentForm
 
 
 def index(request):
@@ -29,11 +29,16 @@ def books(request):
     )
 
 
-def book_detail(request, id=1):
+def book_detail(request, book_id=1):
     return render(
         request,
         'book/detail.html',
-        {'item': Book.objects.get(pk=id)}
+        {
+            'book': Book.objects.get(pk=book_id),
+            'comments': Comment.objects.filter(book=book_id),
+            #'comments': Comment.objects.all(),
+            'form': CommentForm(),
+        }
     )
 
 
@@ -50,4 +55,27 @@ def book_new(request):
         request,
         'book/form.html',
         {'form': form}
+    )
+
+
+def comment_new(request, book_id=1):
+    if request.method == 'POST':
+        comment = Comment()
+        form = CommentForm(request.POST, instance=comment)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.book = Book(id=book_id)
+            obj.author = request.user
+            obj.save()
+            return redirect('book_detail', book_id=book_id)
+    else:
+        form = CommentForm()
+    return render(
+        request,
+        'book/detail.html',
+        {
+            'book': Book.objects.get(pk=book_id),
+            'comments': Comment.objects.all(),
+            'form': form,
+        }
     )
